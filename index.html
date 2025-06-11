@@ -74,10 +74,21 @@
                 display.value = '';
             });
         } else if (btn.id === 'equals') {
-            btn.addEventListener('click', () => {
+            btn.addEventListener('click', async () => {
                 try {
-                    current = eval(current).toString();
-                    display.value = current;
+                    const response = await fetch('/calculate', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ expression: current })
+                    });
+                    const data = await response.json();
+                    if (response.ok) {
+                        current = data.result.toString();
+                        display.value = current;
+                    } else {
+                        display.value = 'Error';
+                        current = '';
+                    }
                 } catch (e) {
                     display.value = 'Error';
                     current = '';
